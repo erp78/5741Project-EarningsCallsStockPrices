@@ -47,10 +47,15 @@ Our two datasets have a combined 15 features. Before cleaning the data, they had
 
 The stock prices table had no missing or corrupted data, but the earnings table did for the quarter, estimated eps, eps, and release time columns. To handle this, we first decided to drop all of the rows with missing data for eps or estimated eps, since these are the main features whose effects we are interested in analyzing. Next, for the 1004 missing values in the quarter column, we used the date column to infer this. We also reformatted all of the values to a standard form (1, 2, 3, 4), since it was previously malformed with some in a “Q1” format and others in a “MM/YYYY” date format. For the 30,548 rows that were missing a release time, we noticed that many were recent rows for the earnings calls that happened within the past two years. For these, we filled in the company’s most recent non-null release time. For companies who had no previous release times listed, we filled in “unknown.”
 
-### Preliminary Analyses (unfinished)
+### Preliminary Analyses
 
-<Text goes here...>
+| <img width="419" alt="Screen Shot 2021-11-01 at 10 26 16 PM" src="https://user-images.githubusercontent.com/44250480/139778706-8c692c2d-c089-4fca-8ece-4fd20b51efcf.png">
+ |
+|:--:|
+| Fig.3 - MSEs with Least Squares Regression |
+The primary question we are aiming to answer is: To what extent does a company’s EPS announced during their earnings call affect their next day opening price? In our preliminary analyses, we used a least-squares regression model fitted to 70% of the shuffled data frame to get a truly random train/test split. The data matrix X consisted of: (1) opening price on the day of the earnings call, (2) EPS surprise (difference between the EPS’ reported during earnings releases and their estimates beforehand), and (3) closing price on the day of the earnings announcement. The target vector y consisted of the opening price on the day after the earnings call. This plot shows the predicted labels versus the actual labels (we only plot the first 10,000 points to avoid slow plots) along with the computed train and test mean-squared error:
 
-### Further Steps (unfinished)
 
-<Text goes here...>
+### Further Steps
+
+As shown in the plot above, the current model has a train MSE of 13.94 and a test MSE of 14.58. This is already quite a low MSE: it should not be a surprise that in the stock market, most companies’ share value is not likely to change dramatically overnight no matter the earnings result. Furthermore, it would be beneficial to factor in earnings release time (pre/post) when thinking about what the “next day” is as opposed to merely looking at trading hours. To further reduce the MSE, we aim to add more features into our model like close price and trading volume. Moreover, we believe it would benefit us to introduce regularization in our models to reduce variance, impose prior structural knowledge and improve interpretability while keeping in mind to minimize the unintended increase of bias.   
