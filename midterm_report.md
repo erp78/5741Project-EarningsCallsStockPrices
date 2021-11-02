@@ -49,11 +49,11 @@ The stock prices table had no missing or corrupted data, but the earnings table 
 
 ### Preliminary Analyses
 
+The primary question we are aiming to answer is: To what extent does a company’s EPS announced during their earnings call affect their next day opening price? In our preliminary analyses, we used a least-squares regression model fitted to 70% of the shuffled data frame to get a truly random train/test split. The data matrix X consisted of: (1) opening price on the day of the earnings call, (2) EPS surprise (difference between the EPS’ reported during earnings releases and their estimates beforehand), and (3) closing price on the day of the earnings announcement. The target vector y consisted of the opening price on the day after the earnings call. Fig.3 shows the predicted labels versus the actual labels (we only plot the first 10,000 points to avoid slow plots) along with the computed train and test mean-squared error.
+
 <img width="416" alt="Screen Shot 2021-11-01 at 11 15 16 PM" src="https://user-images.githubusercontent.com/44250480/139781284-3c45de2c-4b0f-4392-af0e-5fc75dcfe554.png">
 
 Fig.3 - MSEs with Least Squares Regression
-
-The primary question we are aiming to answer is: To what extent does a company’s EPS announced during their earnings call affect their next day opening price? In our preliminary analyses, we used a least-squares regression model fitted to 70% of the shuffled data frame to get a truly random train/test split. The data matrix X consisted of: (1) opening price on the day of the earnings call, (2) EPS surprise (difference between the EPS’ reported during earnings releases and their estimates beforehand), and (3) closing price on the day of the earnings announcement. The target vector y consisted of the opening price on the day after the earnings call. Fig.3 shows the predicted labels versus the actual labels (we only plot the first 10,000 points to avoid slow plots) along with the computed train and test mean-squared error.
 
 ### Further Steps
 
