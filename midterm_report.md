@@ -49,13 +49,12 @@ The stock prices table had no missing or corrupted data, but the earnings table 
 
 ### Preliminary Analyses
 
-<img width="411" alt="image1" src="https://user-images.githubusercontent.com/44250480/139779274-dae05cba-8ba4-4e66-af19-d128c2f053be.png">
+<img width="416" alt="Screen Shot 2021-11-01 at 11 15 16 PM" src="https://user-images.githubusercontent.com/44250480/139781284-3c45de2c-4b0f-4392-af0e-5fc75dcfe554.png">
 
 Fig.3 - MSEs with Least Squares Regression
 
 The primary question we are aiming to answer is: To what extent does a company’s EPS announced during their earnings call affect their next day opening price? In our preliminary analyses, we used a least-squares regression model fitted to 70% of the shuffled data frame to get a truly random train/test split. The data matrix X consisted of: (1) opening price on the day of the earnings call, (2) EPS surprise (difference between the EPS’ reported during earnings releases and their estimates beforehand), and (3) closing price on the day of the earnings announcement. The target vector y consisted of the opening price on the day after the earnings call. Fig.3 shows the predicted labels versus the actual labels (we only plot the first 10,000 points to avoid slow plots) along with the computed train and test mean-squared error.
 
-
 ### Further Steps
 
-As shown in the plot above, the current model has a train MSE of 13.94 and a test MSE of 14.58. This is already quite a low MSE: it should not be a surprise that in the stock market, most companies’ share value is not likely to change dramatically overnight no matter the earnings result. Furthermore, it would be beneficial to factor in earnings release time (pre/post) when thinking about what the “next day” is as opposed to merely looking at trading hours. To further reduce the MSE, we aim to add more features into our model like close price and trading volume. Moreover, we believe it would benefit us to introduce regularization in our models to reduce variance, impose prior structural knowledge and improve interpretability while keeping in mind to minimize the unintended increase of bias.   
+As shown in the plot above, the current model has a train MSE of 12.76 and a test MSE of 15.55. This is already quite a low MSE: it should not be a surprise that in the stock market, most companies’ share value is not likely to change dramatically overnight no matter the earnings result. Furthermore, it would be beneficial to factor in earnings release time (pre/post) when thinking about what the “next day” is as opposed to merely looking at trading hours. To further reduce the MSE, we aim to add more features into our model like close price and trading volume. Moreover, we believe it would benefit us to introduce regularization in our models to reduce variance, impose prior structural knowledge and improve interpretability while keeping in mind to minimize the unintended increase of bias.   
