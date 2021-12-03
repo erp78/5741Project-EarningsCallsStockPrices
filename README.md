@@ -3,4 +3,4 @@
 Emily Proulx (erp78), Ritwik Takkar (rt398), Dan Robinson (dr493)
 
 ## Presentation Video
-[Link](INSERT) to our project presentation video.
+[Link](https://youtu.be/qwvfVWWpAQ0) to our project presentation video.
