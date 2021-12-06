@@ -59,7 +59,7 @@ Fig.5 shows a scatter plot for EPS against the estimated EPS where red dots repr
 
 ### Plan for Developing and Testing Models
 
-| ![slide14](https://user-images.githubusercontent.com/44250480/144770050-92f7465c-6409-40ec-bbf0-10a1422f7600.png) |
+| ![slide14](https://user-images.githubusercontent.com/44250480/144771435-927719f2-fd6c-46bd-bbb1-c4d2aa3b0e4e.png) |
 |:--:|
 | Fig.5 - Modeling Approach Timeline |
 The timeline above is labeled numerically in chronological order outlining each step of our modeling approach. 
