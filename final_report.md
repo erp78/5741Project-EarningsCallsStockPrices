@@ -104,6 +104,8 @@ Next, we took a look at the coefficients of the trained models to see which feat
 |:--:|
 | Fig.7 - Actual vs Predicted Returns |
 
+Here, we plot the actual returns versus the predicted returns from our regression models. It is apparent that these predictions are not the best at estimating the actual returns with outliers, and the relationship might not be linear.
+
 ### Classification
 
 After exploring regression, we wanted to also frame the question as a binary classification problem where we try to predict whether the next day returns are positive or negative. This would simply be an indication of whether the stock price increased or decreased immediately following an earnings call. This target variable was defined as the sign of the difference between the opening price immediately following the call and the closing price from before the call. The first type of classification model that we fit to the data was a single decision tree classifier, tuned on max depth. We then built on this by trying some different ensemble methods that combined the predictions of several decision tree base estimators, with the goal of improving generalizability and robustness, and reducing variance. We used a Bagging Classifier which takes the majority vote of the predictions from several bootstrap trees, and a Random Forest, another bagging technique which uses a random selection of features, and handles higher dimensionality data and missing values well. For a boosting method, we tried the Gradient Boosting Classifier with a deviance loss function, which fits and sums consecutive trees. Finally, we fit a Logistic Regression Classifier which uses a probabilistic loss function.
