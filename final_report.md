@@ -64,11 +64,11 @@ Fig.5 shows a scatter plot for EPS against the estimated EPS where red dots repr
 | Fig.5 - Modeling Approach Timeline |
 The timeline above is labeled numerically in chronological order outlining each step of our modeling approach. 
 
-## Regression
+### Regression
 
 ### Regression Results
 
-## Classification
+### Classification
 
 ### Classification Results
 
