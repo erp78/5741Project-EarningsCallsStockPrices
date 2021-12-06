@@ -35,22 +35,24 @@ The final dataset we analyzed consisted of nearly 48,000 trading days immediatel
 
 ### Data Visualizations
 
-| ![correlation-hm](https://user-images.githubusercontent.com/44250480/144770852-9a158106-c6f4-4b7d-ae26-70863e592fec.png) |
+
+
+| <img src="https://user-images.githubusercontent.com/44250480/144770852-9a158106-c6f4-4b7d-ae26-70863e592fec.png" width="500"> |
 |:--:|
 | Fig.1 - Correlation Heat Map |
 Fig.1 depicts a correlation matrix to represent the correlation between different features using a colored scale where lighter colors show higher correlation and darker colors show lower correlation. This provides insight into which features are related so we can keep in mind any potential multicollinearity issues when modeling.
 
-| ![slide9](https://user-images.githubusercontent.com/44250480/144770953-2ef56d5b-4466-44e1-b71f-9ebb4910864f.png) |
+| <img src="https://user-images.githubusercontent.com/44250480/144770953-2ef56d5b-4466-44e1-b71f-9ebb4910864f.png" width="650"> |
 |:--:|
 | Fig.2 - Frequency of Post-Earnings Call Returns |
 Fig.2 contains two histograms showing the distribution of our two regression targets - post-earnings call log return and returns. This allows us to visualize the range of the values we are trying to predict. The log plot above reveals that the frequencies lie in a symmetrical fashion around 0. 
 
-| ![slide10n12](https://user-images.githubusercontent.com/44250480/144771045-20974638-dd7e-4bd2-80d3-9e791e788995.png) |
+| <img src="https://user-images.githubusercontent.com/44250480/144771045-20974638-dd7e-4bd2-80d3-9e791e788995.png" width="650"> |
 |:--:|
 | Fig.3 - Return vs EPS Surprise and Return vs P/E Ratio |
 The above figures contain scatter plots of our targets (log return and returns) versus two of our features of interest (EPS surprise and P/E ratio). The plots don’t suggest a strong direct linear relationship between the variables, and they indicate some outliers.
 
-| ![slide13](https://user-images.githubusercontent.com/44250480/144771089-62a28449-9b80-4871-bc61-edf027a2584d.png) |
+| <img src="https://user-images.githubusercontent.com/44250480/144771089-62a28449-9b80-4871-bc61-edf027a2584d.png" width="450"> |
 |:--:|
 | Fig.4 - EPS vs Estimated EPS |
 Fig.5 shows a scatter plot for EPS against the estimated EPS where red dots represent negative returns and blue dots represent positive returns. This visualizes the classification task. While the labels are interspersed across the plot, it does seem as though there are more blue points on top of the diagonal where EPS is greater than estimated EPS, and more red points below the diagonal where EPS is less than estimated EPS. This would support the claim that there’s a correlation between a positive EPS surprise and a rise in stock price.
@@ -59,7 +61,7 @@ Fig.5 shows a scatter plot for EPS against the estimated EPS where red dots repr
 
 ### Plan for Developing and Testing Models
 
-| ![slide14](https://user-images.githubusercontent.com/44250480/144771435-927719f2-fd6c-46bd-bbb1-c4d2aa3b0e4e.png) |
+| <img src="https://user-images.githubusercontent.com/44250480/144771435-927719f2-fd6c-46bd-bbb1-c4d2aa3b0e4e.png" width="800"> |
 |:--:|
 | Fig.5 - Modeling Approach Timeline |
 The timeline above is labeled numerically in chronological order outlining each step of our modeling approach. 
