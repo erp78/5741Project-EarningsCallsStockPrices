@@ -33,9 +33,19 @@ The final dataset we analyzed consisted of nearly 48,000 trading days immediatel
 
 ### Data Preparation and Cleaning
 
+We first pre-processed the base earnings table, starting by dropping all the rows with a missing EPS or EPS estimate, since those were important features. This was only a small portion of nearly 170,000 instances. We imputed missing quarter values based on the given date, and missing release times based on previous values for that company. Then we merged the daily stock price table into each row of the earnings table based on the symbol and date. We made sure to account for weekends and offset the previous and next date columns for earnings occurring after Friday market close or Monday before market open, allowing us to retain all stock pricing data for each company on the day of the earnings call and the trading days both before and after the call. We performed another merge to add in the yearly company financial fundamentals data, keeping the metrics we thought were significant. Having completed merging all three tables, we dropped the utility columns that were no longer needed. To account for extreme outliers, we dropped all rows with values with a z-score above 3 for real-valued columns. Then, we dropped all remaining rows with either missing pricing data or values of infinity. Finally, before dropping the stock prices, we used them to define more meaningful features:
+
+- eps_surprise =  (EPS Actual - EPS Estimate) / |EPS Actual|
+- pe_ratio = closing price before call / EPS
+
+And our target variables for both regression and binary classification:
+
+- returns = (open(t) - close(t-1))/close(t-1) for a given day t
+- log_return = ln(close(t)/close(t-1)) for a given day t
+- positive_returns = 1 for positive returns, 0 for negative
+- positive_log = 1 for positive log return, 0 for negative
+
 ### Data Visualizations
-
-
 
 | <img src="https://user-images.githubusercontent.com/44250480/144770852-9a158106-c6f4-4b7d-ae26-70863e592fec.png" width="500"> |
 |:--:|
@@ -68,15 +78,59 @@ The timeline above is labeled numerically in chronological order outlining each 
 
 ### Regression
 
+We first approached this as a regression problem, trying to predict the percent returns, defined as the percent change between the opening price immediately following an earnings call and the closing price from before the call, multiplied by 100 for easier percentage interpretation. We explored several different variations of linear models, starting with a basic linear regression model. Next, we added in different types of regularization on top of the linear least squares loss function to try to minimize overfitting and reduce variance. We fit a Ridge regression model which uses L2 regularization to penalize large coefficients, a Lasso regression model which uses L1 regularization to minimize the number of non-zero coefficients for sparsity, and an Elastic-Net which combines L1 and L2 regularization. Additionally, we fit a Huber regressor which has the advantage of being robust to outliers, such that the loss function isn’t too heavily influenced by outliers but their effect isn’t completely ignored.
+
+For regression modeling, we utilized the 60/20/20 train-validate-test split. We performed hyperparameter tuning by training the models on the training set, measuring the mean squared error on the validation set, and selecting the hyperparameter values that minimized this. Specifically, we tuned the values of alpha (regularization parameter) for Ridge, Lasso, and Elastic-Net, epsilon (outlier definition parameter) for Huber, and l1_ratio (mixing parameter) for Elastic-Net. After the parameter values were determined, we fit models with these values to the training set, and then evaluated their performance by computing both the train error and the error on the test set. We used root mean squared error and mean absolute error as our metrics.  
+
 ### Regression Results
+
+|                                 | Train RMSE | Train MAE | Test RMSE | Test MAE |
+|---------------------------------|------------|-----------|-----------|----------|
+| LinearRegression                | 5.044229   | 3.426747  | 5.074254  | 3.435696 |
+| Ridge (a=0.5)                   | 5.093807   | 3.460001  | 5.048118  | 3.401765 |
+| Lasso (a=.001)                  | 5.094912   | 3.460543  | 5.048004  | 3.401033 |
+| ElasticNet (a=.001, l1_ratio=1) | same       | as        | lasso     |          |
+| Huber (eps=2.35, a=.0017)       | 5.094068   | 3.459318  | 5.048023  | 3.400898 |
+
+Above, we present the results of our regression modeling. Most of the error values across the models were similar. This can be explained by the fact that the scale of our target is very small and the outputs from our models fall in a narrow window. However, regularization did provide slight decreases in error from the non-regularized model. It also improved generalization, as the test errors were no longer greater than the train errors. We conclude that the Lasso and Huber models are best at predicting the test set, which are models that favor sparsity and handle outliers well, respectively.
+
+| <img src="https://user-images.githubusercontent.com/44250480/144774919-14417e17-912b-4a31-880d-21708e4f7ba0.png" width="500"> |
+|:--:|
+| Fig.6 - Model Coefficients |
+
+Next, we took a look at the coefficients of the trained models to see which features played a significant role in determining the predicted output value. As shown in Fig.6, the non-regularized linear model had a spread of coefficients across several features, with the coefficients largest for liabilities, EPS surprise, assets, and net income. For the remaining three models, EPS surprise and EPS were the features with the largest coefficients, meaning these earnings call-related metrics influenced the predicted output the most. The magnitudes of the coefficients were smaller across the board for Ridge and Huber in comparison to the non-regularized model. And for Lasso, it is clear how sparsity is favored, since only EPS surprise and EPS had non-zero coefficients. The other features didn’t even contribute to the prediction.
+
+| <img src="https://user-images.githubusercontent.com/44250480/144775000-285e2880-fd1c-483a-9589-3c0c691011fb.png" width="800" height="170"> |
+|:--:|
+| Fig.7 - Actual vs Predicted Returns |
 
 ### Classification
 
+After exploring regression, we wanted to also frame the question as a binary classification problem where we try to predict whether the next day returns are positive or negative. This would simply be an indication of whether the stock price increased or decreased immediately following an earnings call. This target variable was defined as the sign of the difference between the opening price immediately following the call and the closing price from before the call. The first type of classification model that we fit to the data was a single decision tree classifier, tuned on max depth. We then built on this by trying some different ensemble methods that combined the predictions of several decision tree base estimators, with the goal of improving generalizability and robustness, and reducing variance. We used a Bagging Classifier which takes the majority vote of the predictions from several bootstrap trees, and a Random Forest, another bagging technique which uses a random selection of features, and handles higher dimensionality data and missing values well. For a boosting method, we tried the Gradient Boosting Classifier with a deviance loss function, which fits and sums consecutive trees. Finally, we fit a Logistic Regression Classifier which uses a probabilistic loss function.
+
+For classification modeling, we utilized the 70-30 train-test split. We performed hyperparameter tuning using 3-fold cross validation on the training set, taking the values that produced the lowest mean ROC-AUC score. For the trees, the primary parameter tuned was max depth, since this practice tends to improve the performance the most, as it is largely dependent on the relation of the inputs. We also tuned max_features and max_leaf_nodes for several of the models to find the optimal level of model complexity. For the logistic classifier, we tuned C (inverse of regularization strength). With the selected values, we trained the classifiers on the training set and evaluated their performance by computing the cross validation scores on the training set and the scores on the test set, using area under the ROC curve and accuracy as our metrics.
+
 ### Classification Results
+
+|                                 | Train ROC-AUC | Train Accuracy | Test ROC-AUC | Test Accuracy |
+|---------------------------------|:-------------:|:--------------:|:------------:|:-------------:|
+| Decision Tree (max_depth=4)     | 0.713234      | 0.669234       | 0.661745     | 0.663346      |
+| Bagged Trees                    | 0.723273      | 0.672847       | 0.662544     | 0.664322      |
+| Random Forest (max_depth=4)     | 0.715898      | 0.671533       | 0.664060     | 0.665366      |
+| Gradient Boosting (max_depth=3) | 0.725771      | 0.672996       | 0.664271     | 0.665924      |
+| Logistic Regression (c=.99)     | 0.676365      | 0.620122       | 0.612287     | 0.619602      |
+
+Above, we present the results from our classification modeling. Most of the scores were in the 60s-70s percent range. The ensemble methods improved slightly on the basic tree. There is potential overfitting, since the models performed slightly worse on the test set than the train set, but the difference is minor. We conclude that the Gradient Boosting Classifier is the best model for the data, based on its performance on the test set. This is a model that at every step learns from the previous tree and tries to improve upon that error.
+
+| <img src="https://user-images.githubusercontent.com/44250480/144774508-8a453f98-30cf-482e-8581-3c6fee89ce1c.png" width="500"> |
+|:--:|
+| Fig.8 - Feature Importance |
+
+Next, we took a look at the feature importance results that the models provided, based on decrease in node impurity. There were strong results across the board. EPS surprise was the most important by a significant amount, with EPS and P/E ratio second and third. This indicates that these earnings call-related features are the most useful at predicting whether the next day returns were positive or negative.
 
 ## Modeling Conclusions
 
-<BODY>
+After going through the process of fitting initial models, tuning and refining, and comparing results across models, we have come to some conclusions about modeling the problem. The models that performed the best on the test sets, and which we would use to predict future stock price shifts after earnings calls, were Lasso and Huber for Regression and the Gradient Boosted Tree Ensemble for classification. These models were able to generalize the data the best and we are most confident in their ability to make predictions on future data, whether we are interested in the magnitude of the returns or the direction. We observed that when we added in regularization, ensemble techniques, and hyperparameter tuning to our base models, we were able to see slight performance improvements, measured by decreased error for regression or increased accuracy for classification. These improvements were small-scale, which could be due to the small predicted output range or could indicate that there was minimal overfitting to begin with. Most importantly, for both models, we saw that the earnings call-related features influence the predictions the most compared to the other features. They appear consistently among the highest ranked for feature importance and coefficient weights. Without them, it would be difficult to predict the shift in stock price using just the fundamentals features.This leads us to conclude that overall, there is a high correlation between EPS/EPS surprise and the next day returns, but it is tough to always predict this reliably and quantify the exact impact.
 
 ## Discussion
   
